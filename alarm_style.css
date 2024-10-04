@@ -1,0 +1,57 @@
+html {
+    font-size: 100%;
+}
+
+body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    /* font-size: 16px; */
+}
+
+.alarm-form {
+    /* margin-bottom: 20px; */
+    margin-bottom: 1.2rem;
+}
+
+.alarm-list {
+    /* margin-bottom: 20px; */
+    margin-bottom: 1.2rem;
+}
+
+h1 {
+    color: red;
+}
+
+input {
+    height: 20px;
+    width: 180px;
+    margin-bottom: 5px;
+}
+
+.button {
+    margin-right: 5px;
+    height: 30px;
+    width: 100px;
+}
+
+button {
+    margin-right: 5px;
+    height: 30px;
+    width: 100px;
+}
+
+@font-face {
+    font-family: DS-Digital;
+    src: url('./font-style/DS-DIGI.TTF');
+}
+
+#current-time {
+    font-family: DS-Digital;
+    /* font-size: 45px; */
+    font-size: 3rem;
+}
+
+/* #datetime-oper {
+    font-size: 16px;
+} */

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+	<!-- Script_by_KaMu_Zax813 -->
+    <!-- Wersja 1.0 - Working alarm -->
+    <!-- Wersja 2.0 - Add generating signature -->
+    <!-- Wersja 2.5 - Add SilenceLife to maintain 'focus' in case of inactive tab' -->
+    <!-- Wersja 3.0 - Separation of alarm list from code and improvement of style-->
+    <!-- Wersja 3.1 - Add display of alarms in the past hour-->
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="alarm_style.css">
+    <script src="alarm_list.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm</title>
+
+</head>
+<body>
+    <div class="alarm-form">
+        <h1>Alarm Clock</h1>
+        <h2 id="current-time"></h2>
+		<p>Sign
+		<input type="text" id="sign"></input></p>
+		
+        <!-- <button id="copyButton" onclick="copySignature()" >Kopiuj</button> -->
+		<input class="button" type="button" id="copyButton" value="Activate Alarm"></input>
+		<text id="datetime-sign"> </text>
+			
+		<script>
+				window.onbeforeunload = function() { return "Would you really like to close your browser?"; }
+		
+		//Script_by_KaMu_Zax813
+		let audioLife = new Audio(`SilenceLife.mp3`);
+        audioLife.loop = true;
+		audioLife.volume = 0.1;
+		
+		function updateSignature() {
+			const sign = document.getElementById('sign').value;
+			const currentTime = new Date();
+			const year = String(currentTime.getFullYear()).padStart(4, '0');
+			const month = String(currentTime.getMonth()+1).padStart(2, '0');
+			const day = String(currentTime.getDate()).padStart(2, '0');
+            const hours = String(currentTime.getHours()).padStart(2, '0');
+            const minutes = String(currentTime.getMinutes()).padStart(2, '0');
+            const seconds = String(currentTime.getSeconds()).padStart(2, '0');
+			document.getElementById('datetime-sign').textContent = `${year}-${month}-${day} ${hours}:${minutes} ${sign}`;
+		}
+		
+		setInterval(updateSignature, 1000);
+		</script>
+		
+    </div>
+
+    <!-- <div id="alarm-box" style="border: 2px solid white; padding: 15px; width: fit-content"> -->
+    <div id="alarm-box" style="width: fit-content">
+
+    </div>
+    
+    <div class="alarm-list">
+        <h2>List</h2>
+        <ul id="alarm-list"></ul>
+    </div>
+
+    <script type="module">
+	
+		
+        let audio = null;
+		const alarms = load_alarms();
+
+
+        function updateCurrentTime() {
+            const currentTime = new Date();
+            const hours = String(currentTime.getHours()).padStart(2, '0');
+            const minutes = String(currentTime.getMinutes()).padStart(2, '0');
+            const seconds = String(currentTime.getSeconds()).padStart(2, '0');
+            document.getElementById('current-time').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function checkAlarms() {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const currentMinute = currentTime.getMinutes();
+            const currentSecond = currentTime.getSeconds();
+            const currentDay = currentTime.getDay();
+            const currentDate = currentTime.getDate();
+            const currentMonth = currentTime.getMonth();
+            const currentYear = currentTime.getFullYear();
+            const currentDateTime = new Date(currentYear, currentMonth, currentDate, currentHour, currentMinute, currentSecond);
+            
+            //Display alarms in the past hour
+            const pastHourDateTime = new Date(currentYear, currentMonth, currentDate, currentHour-1, currentMinute, currentSecond);
+            const upcomingAlarms = [];
+
+            alarms.forEach(alarm => {
+                if (alarm.days.includes(getDayName(currentDay))) {
+                    const alarmTime = alarm.time.split(':');
+                    const alarmDateTime = new Date(currentYear, currentMonth, currentDate, alarmTime[0], alarmTime[1], alarmTime[2]);
+                    if (currentDateTime >= alarmDateTime && currentDateTime <= new Date(currentYear, currentMonth, currentDate, alarmTime[0], alarmTime[1], alarmTime[2], 0)) {
+                        triggerAlarm(alarm);
+                    } else if (pastHourDateTime < alarmDateTime) {
+                    //} else if (currentDateTime < alarmDateTime) {
+                    //} else  {
+                        upcomingAlarms.push(alarm);
+                    }
+                }
+            });
+
+            upcomingAlarms.sort((a, b) => {
+                const aTime = new Date();
+                const bTime = new Date();
+                aTime.setHours(...a.time.split(':')[0], ...a.time.split(':')[1], 0);
+                bTime.setHours(...b.time.split(':')[0], ...b.time.split(':')[1], 0);
+                return aTime - bTime;
+            });
+
+            updateAlarmList(upcomingAlarms);
+        }
+
+        function getDayName(day) {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return days[day];
+        }
+
+        function triggerAlarm(alarm) {
+            audio = new Audio(`${alarm.sound}`);
+            audio.loop = true;
+            audio.play();
+            //Colors for popup
+            let colors = load_colors();
+            let index = 0;
+            const alarmBox = document.getElementById('alarm-box');
+            const alarmPopup = document.createElement('div');
+            alarmPopup.classList.add('alarm-popup');
+            alarmPopup.innerHTML = `
+                    <div style="border: 2px solid white; padding: 15px; width: fit-content">
+                    <h2>${alarm.title}</h2>
+                    <button id='clsButton' style="margin-bottom:10px;">Zamknij</button>
+                    </div>
+            `;
+
+            setInterval(function(){
+                alarmPopup.style.backgroundColor=colors[index];
+                index = (index + 1) % colors.length;
+            },300);
+
+            alarmBox.appendChild(alarmPopup);
+            // document.body.appendChild(alarmPopup);
+        }
+		
+
+
+        function updateAlarmList(alarms) {
+			const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const currentMinute = currentTime.getMinutes();
+            const currentSecond = currentTime.getSeconds();
+            const currentDay = currentTime.getDay();
+            const currentDate = currentTime.getDate();
+            const currentMonth = currentTime.getMonth();
+            const currentYear = currentTime.getFullYear();
+            const currentDateTime = new Date(currentYear, currentMonth, currentDate, currentHour, currentMinute, currentSecond);
+            const alarmList = document.getElementById('alarm-list');
+            alarmList.innerHTML = '';
+            alarms.forEach(alarm => {
+				const alarmTime = alarm.time.split(':');
+                const alarmDateTime = new Date(currentYear, currentMonth, currentDate, alarmTime[0], alarmTime[1], alarmTime[2]);
+                const alarmItem = document.createElement('li');
+                //alarmItem.textContent = `${getDayName(new Date().getDay())} ${alarm.time} - ${alarm.title}`;
+                alarmItem.textContent = `${alarm.time} - ${alarm.title}`;
+				// color the alarm if it's in the past
+				if (currentDateTime > alarmDateTime) {
+					alarmItem.style.color = "silver";
+                    alarmItem.style.textDecoration = "line-through";
+				}
+					alarmList.appendChild(alarmItem);
+			});
+        }
+
+        function copySignature() {
+			const element = document.querySelector('#datetime-sign');
+			const storage = document.createElement('textarea');
+			storage.value = element.innerHTML;
+			element.appendChild(storage);
+			storage.select();
+			storage.setSelectionRange(0, 99999);
+			document.execCommand('copy');
+			element.removeChild(storage);
+		}
+		
+		
+		document.addEventListener('click', function(event) {
+			if (event.target.id === 'clsButton') {
+                copySignature();
+                audio.pause();
+				audio.currentTime = 0;
+				event.target.parentElement.remove();
+			}
+
+            if (event.target.id === 'copyButton') {
+                copySignature();
+                audioLife.play();
+                document.getElementById("copyButton").value="Copy";
+
+			}
+		});
+
+        setInterval(updateCurrentTime, 1000);
+        setInterval(checkAlarms, 1000);
+        document.visibilityState === 'visible';
+    </script>
+</body>
+</html>

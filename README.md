@@ -1,9 +1,5 @@
 # Alarm_Clock_JS
- 
-## Table of contents
-* [General info](#general-info)
-* [How to use it?](#technologies)
-* [Setup](#setup)
+
 
 ## General info
 This project is simple alarm clock write in HTML and JavaScript after hours.

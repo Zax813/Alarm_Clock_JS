@@ -7,20 +7,24 @@ function load_colors() {
 function load_alarms() {
     const alarms = [
         {
+            //Title - the name of the alarm to be displayed
             title: 'DEBUG',
+            //days - the days of the week on which the alarm should be triggered
             days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-            time: '01:25:00',
+            //time - the time at which the alarm should be triggered in 24-hour format (HH:MM:SS)
+            time: '02:25:00',
+            //sound - the sound to be played from the project folder, when the alarm is triggered (you can add your favourite music)
             sound: 'Cuckoo.mp3'
         },
         {
             title: 'TEST',
             days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-            time: '01:30:00',
+            time: '02:32:00',
             sound: 'Cuckoo.mp3'
         },
         {
             title: 'Check active requests',
-            days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            days: ['Monday', 'Wednesday', 'Friday'],
             time: '07:05:00', 
             sound: 'Cuckoo.mp3'
         },
